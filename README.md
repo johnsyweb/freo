@@ -42,15 +42,13 @@ mise run bootstrap
 | Run locally | `mise run local` |
 | Build the image | `mise run build` |
 | Run in Docker | `mise run docker` |
-| Build the GHCR image | `mise run k8s-build` |
-| Push the GHCR image | `mise run k8s-push` |
 | Install Argo CD | `mise run k8s-argocd` |
 | Apply the Argo CD Application | `mise run k8s-application` |
 | Forward port 8081 to the Argo CD UI | `mise run k8s-ui` |
 | Forward port 8080 to the Freo Service | `mise run k8s-forward` |
 | Delete the Application and namespace | `mise run k8s-delete` |
 
-The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags. The local Docker tag remains `freo:local`. Images for minikube are `ghcr.io/johnsyweb/freo:<appVersion>`.
+The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags. The local Docker tag remains `freo:local`. Images for minikube are `ghcr.io/johnsyweb/freo:<appVersion>`, published by GitHub Actions.
 
 ## minikube and Argo CD
 
@@ -102,13 +100,9 @@ kubectl label secret repo-freo -n argocd argocd.argoproj.io/secret-type=reposito
 
 ### 3. Publish the image
 
-Log in to GHCR, then:
+GitHub Actions builds `linux/amd64` and `linux/arm64` and pushes `ghcr.io/johnsyweb/freo:<version>` when you push a git tag `v<version>` that matches Chart `version`, `appVersion`, and `image.tag`. Pull requests and pushes to `main` run tests only.
 
-```bash
-mise run k8s-push
-```
-
-The tag is Chart `appVersion` (currently `0.1.0`). After the first push, set the GitHub package visibility to **public** (**Packages → freo → Package settings**) so minikube can pull without an `imagePullSecret`.
+After the first package appears, set its visibility to **public** (**Packages → freo → Package settings**) so minikube can pull without an `imagePullSecret`.
 
 ### 4. Apply the Application and sync
 
@@ -146,8 +140,8 @@ Delete the Application **before** you expect the namespace to stay gone. Once yo
 One version string: Chart `version`, Chart `appVersion`, `values.yaml` `image.tag`, git tag `v<version>`, and the GHCR tag. Start at `0.1.0`.
 
 1. Set all three files to the new version (for example `0.1.1`).
-2. `mise run k8s-push`
-3. Commit, tag `v0.1.1`, and push `main` plus the tag.
+2. Commit, tag `v0.1.1`, and push `main` plus the tag.
+3. Wait for the **CI** workflow on that tag to push the image.
 4. Sync the Application in the Argo CD UI.
 
 ### Optional Ingress

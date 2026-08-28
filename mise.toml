@@ -32,21 +32,6 @@ depends = ["build"]
 run = "docker run --rm -p 8080:8080 freo:local"
 raw = true
 
-[tasks.k8s-build]
-description = "Build the GHCR image tagged from Chart appVersion"
-run = """
-TAG=$(awk -F': ' '/^appVersion:/ { gsub(/"/, "", $2); print $2; exit }' charts/freo/Chart.yaml)
-docker build -t "ghcr.io/johnsyweb/freo:${TAG}" .
-"""
-
-[tasks.k8s-push]
-description = "Push the GHCR image for the current Chart appVersion"
-depends = ["k8s-build"]
-run = """
-TAG=$(awk -F': ' '/^appVersion:/ { gsub(/"/, "", $2); print $2; exit }' charts/freo/Chart.yaml)
-docker push "ghcr.io/johnsyweb/freo:${TAG}"
-"""
-
 [tasks.k8s-argocd]
 description = "Install Argo CD from the official stable manifest"
 run = """

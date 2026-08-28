@@ -1,4 +1,5 @@
 .git
+.github
 .venv
 venv
 __pycache__
@@ -8,5 +9,6 @@ charts
 argocd
 README.md
 mise.toml
+release_version.py
 test_*.py
 
