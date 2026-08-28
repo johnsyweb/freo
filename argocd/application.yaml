@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: freo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:johnsyweb/freo.git
+    targetRevision: main
+    path: charts/freo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: freo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

@@ -1,20 +1,21 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: freo
-  namespace: freo
+  name: {{ .Chart.Name }}
   labels:
-    app: freo
+    {{- include "freo.labels" . | nindent 4 }}
 spec:
   ingressClassName: nginx
   rules:
-    - host: freo.test
+    - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: freo
+                name: {{ .Chart.Name }}
                 port:
                   number: 8080
+{{- end }}

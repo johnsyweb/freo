@@ -1,24 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: freo
-  namespace: freo
+  name: {{ .Chart.Name }}
   labels:
-    app: freo
+    {{- include "freo.labels" . | nindent 4 }}
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: freo
+      {{- include "freo.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: freo
+        {{- include "freo.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: freo
-          image: freo:local
-          imagePullPolicy: Never
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
@@ -33,19 +32,3 @@ spec:
             httpGet:
               path: /
               port: http
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: freo
-  namespace: freo
-  labels:
-    app: freo
-spec:
-  type: ClusterIP
-  selector:
-    app: freo
-  ports:
-    - name: http
-      port: 8080
-      targetPort: http

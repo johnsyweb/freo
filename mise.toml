@@ -2,13 +2,14 @@ min_version = "2025.8.0"
 
 [tools]
 python = "3.14"
+helm = "3"
 
 [env]
 _.python.venv = { path = ".venv", create = true, uv_create_args = ["--seed"] }
 
 [tasks.bootstrap]
 description = "Install Python dependencies into the virtualenv"
-run = "python -m pip install -r requirements.txt pytest"
+run = "python -m pip install -r requirements.txt pytest pyyaml"
 
 [tasks.test]
 description = "Run the test suite"
@@ -32,18 +33,41 @@ run = "docker run --rm -p 8080:8080 freo:local"
 raw = true
 
 [tasks.k8s-build]
-description = "Build the image inside minikube"
-run = "minikube image build -t freo:local ."
+description = "Build the GHCR image tagged from Chart appVersion"
+run = """
+TAG=$(awk -F': ' '/^appVersion:/ { gsub(/"/, "", $2); print $2; exit }' charts/freo/Chart.yaml)
+docker build -t "ghcr.io/johnsyweb/freo:${TAG}" .
+"""
 
-[tasks.k8s-apply]
-description = "Apply the namespace, Deployment and Service"
-run = "kubectl apply -f k8s/namespace.yaml -f k8s/app.yaml && kubectl wait --for=condition=available deployment/freo -n freo --timeout=120s"
+[tasks.k8s-push]
+description = "Push the GHCR image for the current Chart appVersion"
+depends = ["k8s-build"]
+run = """
+TAG=$(awk -F': ' '/^appVersion:/ { gsub(/"/, "", $2); print $2; exit }' charts/freo/Chart.yaml)
+docker push "ghcr.io/johnsyweb/freo:${TAG}"
+"""
+
+[tasks.k8s-argocd]
+description = "Install Argo CD from the official stable manifest"
+run = """
+kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+"""
+
+[tasks.k8s-application]
+description = "Apply the Argo CD Application once"
+run = "kubectl apply -f argocd/application.yaml"
+
+[tasks.k8s-ui]
+description = "Forward local port 8081 to the Argo CD UI"
+run = "kubectl port-forward svc/argocd-server -n argocd 8081:443"
+raw = true
 
 [tasks.k8s-forward]
-description = "Forward local port 8080 to the Service"
+description = "Forward local port 8080 to the Freo Service"
 run = "kubectl port-forward -n freo svc/freo 8080:8080"
 raw = true
 
 [tasks.k8s-delete]
-description = "Delete the freo namespace and everything in it"
-run = "kubectl delete namespace freo"
+description = "Delete the Argo CD Application and the freo namespace"
+run = "kubectl delete application freo -n argocd --ignore-not-found && kubectl delete namespace freo --ignore-not-found"

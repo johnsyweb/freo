@@ -1,0 +1,9 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/johnsyweb/freo
+  tag: "0.1.0"
+
+ingress:
+  enabled: false
+  host: freo.test
