@@ -74,6 +74,14 @@ When you are finished:
 mise run k8s-delete
 ```
 
+`k8s/ingress.yaml` is not part of the happy path. On macOS with the minikube docker driver, Ingress needs the ingress addon, `minikube tunnel` (leave that terminal open; it may ask for your password), and an `/etc/hosts` entry mapping `freo.test` to `127.0.0.1` — not the address from `minikube ip`. Then apply the Ingress and open [http://freo.test/](http://freo.test/).
+
+```bash
+minikube addons enable ingress
+minikube tunnel
+kubectl apply -f k8s/ingress.yaml
+```
+
 ## Contributing
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/).

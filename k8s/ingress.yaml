@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freo
+  namespace: freo
+  labels:
+    app: freo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: freo.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: freo
+                port:
+                  number: 8080
