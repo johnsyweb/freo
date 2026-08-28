@@ -12,7 +12,7 @@ def _application() -> dict:
 def test_application_tracks_main_and_the_freo_chart():
     spec = _application()["spec"]
 
-    assert spec["source"]["repoURL"] == "git@github.com:johnsyweb/freo.git"
+    assert spec["source"]["repoURL"] == "https://github.com/johnsyweb/freo.git"
     assert spec["source"]["targetRevision"] == "main"
     assert spec["source"]["path"] == "charts/freo"
 

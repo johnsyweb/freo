@@ -52,9 +52,11 @@ The app listens on port 8080. Set `PORT` to use another port locally. `mise run 
 
 ## minikube and Argo CD
 
-You need a running minikube cluster and `kubectl` pointed at it (`kubectl get nodes` must succeed). Start the cluster yourself if it is not up. GitHub Container Registry must be able to serve a **public** `ghcr.io/johnsyweb/freo` package. The git repository stays private; Argo CD clones it with a read-only deploy key.
+You need a running minikube cluster and `kubectl` pointed at it (`kubectl get nodes` must succeed). Start the cluster yourself if it is not up. This GitHub repository is public, so Argo CD clones it over HTTPS with no credentials. Images on `ghcr.io/johnsyweb/freo` are public because they are published from this public repository.
 
 Do not `kubectl apply` the chart's resources. Argo CD owns the live objects.
+
+If you previously created a deploy-key Secret (`repo-freo`) or a GitHub deploy key, delete them. They are no longer used.
 
 ### 1. Install Argo CD
 
@@ -78,33 +80,11 @@ echo
 
 Leave the UI port-forward running in its own terminal.
 
-### 2. Let Argo CD clone this repository
-
-Generate a read-only deploy key (do not commit the private key):
-
-```bash
-ssh-keygen -t ed25519 -C "argocd-freo" -f argocd-freo -N ""
-```
-
-In GitHub: **Settings → Deploy keys → Add deploy key**. Paste `argocd-freo.pub`. Leave **Allow write access** unchecked.
-
-Create the repository secret in the `argocd` namespace (from the directory that holds `argocd-freo`):
-
-```bash
-kubectl create secret generic repo-freo -n argocd \
-  --from-file=sshPrivateKey=argocd-freo \
-  --from-literal=type=git \
-  --from-literal=url=git@github.com:johnsyweb/freo.git
-kubectl label secret repo-freo -n argocd argocd.argoproj.io/secret-type=repository
-```
-
-### 3. Publish the image
+### 2. Publish the image
 
 GitHub Actions builds `linux/amd64` and `linux/arm64` and pushes `ghcr.io/johnsyweb/freo:<version>` when you push a git tag `v<version>` that matches Chart `version`, `appVersion`, and `image.tag`. Pull requests and pushes to `main` run tests only.
 
-After the first package appears, set its visibility to **public** (**Packages → freo → Package settings**) so minikube can pull without an `imagePullSecret`.
-
-### 4. Apply the Application and sync
+### 3. Apply the Application and sync
 
 `argocd/application.yaml` must already be on `main` (push this repository if it is not). Then:
 
