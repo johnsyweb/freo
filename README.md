@@ -2,30 +2,49 @@
 
 A Flask app that serves a Hello World page over HTTP.
 
-## Prerequisites
+Freo is a Hello World example: one HTML page, one route, runnable on the host or in Docker.
 
-- [mise](https://mise.en.dev/) for Python and project tasks
-- Docker, for building and running the image
+## Getting started
 
-## Bootstrap
-
-From the project root:
+Install [mise](https://mise.en.dev/), then from the project root:
 
 ```bash
 mise trust
+mise run local
+```
+
+Open [http://localhost:8080/](http://localhost:8080/).
+
+## Help
+
+This project is unsupported.
+
+## Maintainers
+
+[johnsyweb](https://github.com/johnsyweb)
+
+## Development status
+
+Experimental.
+
+## Local development
+
+Python 3.14 is pinned in `mise.toml`. Docker is required only for image tasks.
+
+```bash
 mise run bootstrap
 ```
 
-This installs Python 3.14 (matching the Docker image), creates `.venv`, and installs Flask plus pytest. Missing tools are installed when you run a task.
+| Task | Command |
+| --- | --- |
+| Install dependencies | `mise run bootstrap` |
+| Run tests | `mise run test` |
+| Run locally | `mise run local` |
+| Build the image | `mise run build` |
+| Run in Docker | `mise run docker` |
 
-## Tasks
+The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags.
 
-| Task | Command | What it does |
-| --- | --- | --- |
-| Bootstrap | `mise run bootstrap` | Install Python dependencies |
-| Test | `mise run test` | Run the test suite |
-| Local | `mise run local` | Run the app on the host |
-| Build | `mise run build` | Build the `freo` image |
-| Docker | `mise run docker` | Build the image (if needed) and run it |
+## Contributing
 
-The app listens on port 8080. Open [http://localhost:8080/](http://localhost:8080/). Set `PORT` to use another port locally. For Docker, set `PORT` on the container and publish it, for example `-e PORT=9090 -p 9090:9090`.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
