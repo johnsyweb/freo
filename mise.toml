@@ -23,10 +23,10 @@ raw = true
 
 [tasks.build]
 description = "Build the Docker image"
-run = "docker build -t freo ."
+run = "docker build -t freo:local ."
 
 [tasks.docker]
 description = "Run the app in Docker"
 depends = ["build"]
-run = "docker run --rm -p 8080:8080 freo"
+run = "docker run --rm -p 8080:8080 freo:local"
 raw = true

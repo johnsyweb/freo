@@ -43,7 +43,7 @@ mise run bootstrap
 | Build the image | `mise run build` |
 | Run in Docker | `mise run docker` |
 
-The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags.
+The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags. The image is tagged `freo:local`.
 
 ## Contributing
 
