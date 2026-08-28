@@ -92,7 +92,7 @@ GitHub Actions builds `linux/amd64` and `linux/arm64` and pushes `ghcr.io/johnsy
 mise run k8s-application
 ```
 
-In the Argo CD UI, open the `freo` Application and **Sync** it by hand. Auto-sync is off until you choose to turn it on.
+In the Argo CD UI, open the `freo` Application. It auto-syncs from `main` (prune and self-heal are on), so you should not need to click **Sync**. Cluster edits in `freo` will be reverted.
 
 ```bash
 mise run k8s-forward
@@ -113,7 +113,7 @@ When you are finished:
 mise run k8s-delete
 ```
 
-Delete the Application **before** you expect the namespace to stay gone. Once you enable auto-sync and self-heal, Argo CD will recreate anything you delete in `freo` until the Application itself is removed.
+Delete the Application **before** you expect the namespace to stay gone. Auto-sync and self-heal will recreate anything you delete in `freo` until the Application itself is removed.
 
 ### Version bumps
 
@@ -122,11 +122,11 @@ One version string: Chart `version`, Chart `appVersion`, `values.yaml` `image.ta
 1. Set all three files to the new version (for example `0.1.1`).
 2. Commit, tag `v0.1.1`, and push `main` plus the tag.
 3. Wait for the **CI** workflow on that tag to push the image.
-4. Sync the Application in the Argo CD UI.
+4. Argo CD will sync `main` on its own. If it races the image push, wait; it will retry.
 
 ### Optional Ingress
 
-Ingress is off by default. On macOS with the minikube docker driver it needs the ingress addon, `minikube tunnel` (leave that terminal open; it may ask for your password), and an `/etc/hosts` entry mapping `freo.test` to `127.0.0.1` — not the address from `minikube ip`. Set `ingress.enabled: true` in `charts/freo/values.yaml`, commit, push, and sync. Then open [http://freo.test/](http://freo.test/).
+Ingress is off by default. On macOS with the minikube docker driver it needs the ingress addon, `minikube tunnel` (leave that terminal open; it may ask for your password), and an `/etc/hosts` entry mapping `freo.test` to `127.0.0.1` — not the address from `minikube ip`. Set `ingress.enabled: true` in `charts/freo/values.yaml`, commit, and push. Then open [http://freo.test/](http://freo.test/).
 
 ```bash
 minikube addons enable ingress

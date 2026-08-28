@@ -28,7 +28,8 @@ def test_application_lives_in_argocd_and_creates_the_freo_namespace():
     assert "CreateNamespace=true" in spec["syncPolicy"]["syncOptions"]
 
 
-def test_application_does_not_auto_sync():
-    spec = _application()["spec"]
+def test_application_auto_syncs_prunes_and_self_heals():
+    automated = _application()["spec"]["syncPolicy"]["automated"]
 
-    assert "automated" not in spec.get("syncPolicy", {})
+    assert automated["prune"] is True
+    assert automated["selfHeal"] is True
