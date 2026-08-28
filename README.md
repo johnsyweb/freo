@@ -2,28 +2,30 @@
 
 A Flask app that serves a Hello World page over HTTP.
 
-## Run locally
+## Prerequisites
+
+- [mise](https://mise.en.dev/) for Python and project tasks
+- Docker, for building and running the image
+
+## Bootstrap
+
+From the project root:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python app.py
+mise trust
+mise run bootstrap
 ```
 
-Open [http://localhost:8080/](http://localhost:8080/). The port defaults to 8080; set `PORT` to use another.
+This installs Python 3.14 (matching the Docker image), creates `.venv`, and installs Flask plus pytest. Missing tools are installed when you run a task.
 
-## Run with Docker
+## Tasks
 
-```bash
-docker build -t freo . && docker run --rm -p 8080:8080 freo
-```
+| Task | Command | What it does |
+| --- | --- | --- |
+| Bootstrap | `mise run bootstrap` | Install Python dependencies |
+| Test | `mise run test` | Run the test suite |
+| Local | `mise run local` | Run the app on the host |
+| Build | `mise run build` | Build the `freo` image |
+| Docker | `mise run docker` | Build the image (if needed) and run it |
 
-To use a different port, set `PORT` on the container and publish it, for example `-e PORT=9090 -p 9090:9090`.
-
-## Tests
-
-```bash
-pip install pytest
-pytest
-```
+The app listens on port 8080. Open [http://localhost:8080/](http://localhost:8080/). Set `PORT` to use another port locally. For Docker, set `PORT` on the container and publish it, for example `-e PORT=9090 -p 9090:9090`.
