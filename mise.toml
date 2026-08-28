@@ -4,7 +4,7 @@ min_version = "2025.8.0"
 python = "3.14"
 
 [env]
-_.python.venv = { path = ".venv", create = true, python = "3.14", uv_create_args = ["--seed"] }
+_.python.venv = { path = ".venv", create = true, uv_create_args = ["--seed"] }
 
 [tasks.bootstrap]
 description = "Install Python dependencies into the virtualenv"
