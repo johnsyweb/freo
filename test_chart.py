@@ -45,7 +45,7 @@ def test_default_render_deploys_two_replicas_of_the_ghcr_image():
     assert len(deployments) == 1
     container = deployments[0]["spec"]["template"]["spec"]["containers"][0]
     assert deployments[0]["spec"]["replicas"] == 2
-    assert container["image"] == "ghcr.io/johnsyweb/freo:0.1.0"
+    assert container["image"] == "ghcr.io/johnsyweb/freo:0.1.1"
     assert container["imagePullPolicy"] == "IfNotPresent"
 
 

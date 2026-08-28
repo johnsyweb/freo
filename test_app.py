@@ -22,10 +22,17 @@ def test_get_root_states_the_operating_system_and_version(monkeypatch):
     )
 
 
-def test_unknown_path_returns_404():
-    response = app.test_client().get("/nope")
+def test_get_root_states_the_host_time_in_utc(monkeypatch):
+    monkeypatch.setattr(
+        app_module, "host_time_description", lambda: "2026-08-29T06:50:00Z"
+    )
 
-    assert response.status_code == 404
+    response = app.test_client().get("/")
+
+    assert (
+        b"<p>The time on this host is 2026-08-29T06:50:00Z (UTC).</p>"
+        in response.data
+    )
 
 
 def test_unknown_path_returns_404():

@@ -117,7 +117,7 @@ Delete the Application **before** you expect the namespace to stay gone. Once yo
 
 ### Version bumps
 
-One version string: Chart `version`, Chart `appVersion`, `values.yaml` `image.tag`, git tag `v<version>`, and the GHCR tag. Start at `0.1.0`.
+One version string: Chart `version`, Chart `appVersion`, `values.yaml` `image.tag`, git tag `v<version>`, and the GHCR tag. Start at `0.1.0`. Current is `0.1.1`.
 
 1. Set all three files to the new version (for example `0.1.1`).
 2. Commit, tag `v0.1.1`, and push `main` plus the tag.
