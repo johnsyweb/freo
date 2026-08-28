@@ -1,4 +1,6 @@
+import html
 import os
+import platform
 
 from flask import Flask, Response
 
@@ -12,14 +14,28 @@ HELLO_WORLD_PAGE = """<!DOCTYPE html>
 </head>
 <body>
   <h1>Hello, World</h1>
+  <p>The underlying operating system is {operating_system}.</p>
 </body>
 </html>
 """
 
 
+def operating_system_description() -> str:
+    try:
+        return platform.freedesktop_os_release()["PRETTY_NAME"]
+    except OSError:
+        mac_version = platform.mac_ver()[0]
+        if mac_version:
+            return f"macOS {mac_version}"
+        return f"{platform.system()} {platform.release()}"
+
+
 @app.get("/")
 def hello_world():
-    return Response(HELLO_WORLD_PAGE, mimetype="text/html")
+    page = HELLO_WORLD_PAGE.format(
+        operating_system=html.escape(operating_system_description())
+    )
+    return Response(page, mimetype="text/html")
 
 
 if __name__ == "__main__":
