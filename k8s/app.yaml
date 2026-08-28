@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freo
+  namespace: freo
+  labels:
+    app: freo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: freo
+  template:
+    metadata:
+      labels:
+        app: freo
+    spec:
+      containers:
+        - name: freo
+          image: freo:local
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: freo
+  namespace: freo
+  labels:
+    app: freo
+spec:
+  type: ClusterIP
+  selector:
+    app: freo
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

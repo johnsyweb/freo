@@ -30,3 +30,20 @@ description = "Run the app in Docker"
 depends = ["build"]
 run = "docker run --rm -p 8080:8080 freo:local"
 raw = true
+
+[tasks.k8s-build]
+description = "Build the image inside minikube"
+run = "minikube image build -t freo:local ."
+
+[tasks.k8s-apply]
+description = "Apply the namespace, Deployment and Service"
+run = "kubectl apply -f k8s/namespace.yaml -f k8s/app.yaml && kubectl wait --for=condition=available deployment/freo -n freo --timeout=120s"
+
+[tasks.k8s-forward]
+description = "Forward local port 8080 to the Service"
+run = "kubectl port-forward -n freo svc/freo 8080:8080"
+raw = true
+
+[tasks.k8s-delete]
+description = "Delete the freo namespace and everything in it"
+run = "kubectl delete namespace freo"

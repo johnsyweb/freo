@@ -2,7 +2,7 @@
 
 A Flask app that serves a Hello World page over HTTP.
 
-Freo is a Hello World example: one HTML page, one route, runnable on the host or in Docker.
+Freo is a Hello World example: one HTML page, one route, runnable on the host, in Docker, or as a Deployment on local minikube.
 
 ## Getting started
 
@@ -42,8 +42,37 @@ mise run bootstrap
 | Run locally | `mise run local` |
 | Build the image | `mise run build` |
 | Run in Docker | `mise run docker` |
+| Build the image in minikube | `mise run k8s-build` |
+| Apply namespace, Deployment and Service | `mise run k8s-apply` |
+| Forward port 8080 to the Service | `mise run k8s-forward` |
+| Delete the minikube namespace | `mise run k8s-delete` |
 
 The app listens on port 8080. Set `PORT` to use another port locally. `mise run docker` publishes 8080. To use another port with Docker, run the container yourself with matching `-e PORT` and `-p` flags. The image is tagged `freo:local`.
+
+## minikube
+
+You need a running minikube cluster and `kubectl` pointed at it (`kubectl get nodes` must succeed). Start the cluster yourself if it is not up.
+
+```bash
+mise run k8s-build
+mise run k8s-apply
+mise run k8s-forward
+```
+
+Open [http://localhost:8080/](http://localhost:8080/). Leave the port-forward running while you use the page.
+
+The Deployment runs two replicas. Inspect with:
+
+```bash
+kubectl get deploy,rs,po,svc -n freo
+kubectl logs -n freo -l app=freo
+```
+
+When you are finished:
+
+```bash
+mise run k8s-delete
+```
 
 ## Contributing
 
